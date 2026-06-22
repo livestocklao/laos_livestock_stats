@@ -263,6 +263,9 @@ class GoogleSheetsDataLoader:
     def _get_connection(self) -> gspread.Spreadsheet:
         if self._connection is None:
             try:
+                
+                print("GOOGLE_CREDENTIALS_JSON" in os.environ)
+                print(sorted(os.environ.keys()))
                 creds_json = os.environ["GOOGLE_CREDENTIALS_JSON"]
                 print("exists:", creds_json is not None)
 
