@@ -1,36 +1,5 @@
 """
 Weather Information Tab Layout for Animal Disease Monitoring Dashboard (Dash)
-=============================================================================
-Translates the Streamlit WeatherInfoDashboard into Dash/Plotly.
-
-Layout
-------
-  ┌──────────────────────────────────────────────────────────────┐
-  │  TOP ROW                                                     │
-  │  ┌─────────────────┬──────────────────┬───────────────────┐  │
-  │  │ create_weather  │  Vientiane cards │  Rotating region  │  │
-  │  │ _map (plotly)   │  (3x2 grid)      │  cards (3x2 grid) │  │
-  │  └─────────────────┴──────────────────┴───────────────────┘  │
-  │                                                              │
-  │  BOTTOM ROW                                                  │
-  │  ┌────────────────────────┬─────────────────────────────┐   │
-  │  │  Temperature chart     │  Humidity chart              │   │
-  │  └────────────────────────┴─────────────────────────────┘   │
-  └──────────────────────────────────────────────────────────────┘
-
-Usage in app.py
----------------
-    from weather_info_layout import build_weather_info_tab, register_weather_info_callbacks
-
-    dcc.Tab(
-        label='Weather Information',
-        value='weather-information',
-        className='custom-tab',
-        selected_className='tab--selected',
-        children=build_weather_info_tab(),
-    )
-
-    register_weather_info_callbacks(app)
 """
 
 from dash import html, dcc, Input, Output, State

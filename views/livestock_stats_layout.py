@@ -1482,10 +1482,7 @@ def _build_breeding_stats_table(df_raw, max_height="calc(100vh - 320px)"):
 # ─────────────────────────────────────────────────────────────────────────────
 def build_livestock_stats_tab() -> html.Div:
     """Return the complete layout for the Livestock Statistics tab."""
-    # stores = html.Div([
-    #     dcc.Store(id="ls-load-trigger", data=0),
-    # ], style={"display": "none"})
-
+    
     stores = html.Div([
         dcc.Store(id="ls-load-trigger", data=0),
         dcc.Store(id='ls-auto-click-store', data=None),
@@ -1624,10 +1621,7 @@ def build_livestock_stats_tab() -> html.Div:
         "flexDirection": "column",
         "height": "100%",
     })
-    # Scoped separately so updating the map (e.g. clicking an animal button)
-    # doesn't show a loading overlay over the table too — a single Loading
-    # wrapping both columns would dim/spin the whole row for any callback
-    # output anywhere inside it, table included.
+
     main_row = html.Div(
         [
             html.Div(
@@ -2697,7 +2691,6 @@ def register_livestock_stats_callbacks(app) -> None:
             raise PreventUpdate
         
         selected_tab = triggered_id.replace('ls-btn-', '')
-        print("Auto-click triggered for tab:", selected_tab)
         
         # Return the selected tab to trigger the clientside callback
         return selected_tab
@@ -2757,7 +2750,7 @@ def register_livestock_stats_callbacks(app) -> None:
                         console.warn('ls-group-right-group not found');
                     }
                 }
-            }, 300);  // Increased delay to ensure panel is fully rendered
+            }, 200);  // Increased delay to ensure panel is fully rendered
             
             return window.dash_clientside.no_update;
         }

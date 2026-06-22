@@ -1,49 +1,5 @@
 """
 Overview Tab Layout for Animal Disease Monitoring Dashboard (Dash)
-=================================================================
-Translates the Streamlit overview + weather_metric_bar into Dash/Plotly.
-
-Layout
-------
-  ┌─────────────────────────────────────────────────────────┐
-  │  WEATHER CARDS SECTION                                  │
-  │  ┌─────────────────────────┬─────────────────────────┐  │
-  │  │  Vientiane (fixed)      │  City (auto-rotating)   │  │
-  │  │  Row 1: Temp Hum Press  │  Row 1: Temp Hum Press  │  │
-  │  │  Row 2: Wind Vis Sun    │  Row 2: Wind Vis Sun    │  │
-  │  └─────────────────────────┴─────────────────────────┘  │
-  │                                                         │
-  │  PLOTS SECTION                                          │
-  │  ┌──────────────────────┬──────────────────────────┐   │
-  │  │  Quick Overview Chart│  Animal Stats + Nav      │   │
-  │  └──────────────────────┴──────────────────────────┘   │
-  └─────────────────────────────────────────────────────────┘
-
-Usage
------
-In app.py, replace the empty Overview dcc.Tab children with:
-
-    from overview_layout import build_overview_tab, register_overview_callbacks
-
-    # Inside layout definition:
-    dcc.Tab(
-        label='Overview',
-        value='overview',
-        children=build_overview_tab()
-    )
-
-    # After app is created:
-    register_overview_callbacks(app, load_overview_data, quick_overview_func, display_animal_stats_func)
-
-Data contract
--------------
-load_overview_data() → (disease_stats: pd.DataFrame, weather_data: pd.DataFrame)
-
-weather_data columns expected:
-    region, temperature, humidity, pressure, wind_speed, visibility, sunrise, sunset
-
-disease_stats / quick_overview_func and display_animal_stats_func follow same
-signatures as the Streamlit version.
 """
 
 from dash import html, dcc, Input, Output, State
@@ -52,11 +8,10 @@ import time
 
 from utils.data_loader import load_overview_data
 from utils.plots import quick_overview_table, display_animal_stats
+import plotly.graph_objects as go
 
 
-# ---------------------------------------------------------------------------
-# Color palette (mirrors Streamlit metrics_card_1 + home_css)
-# ---------------------------------------------------------------------------
+
 _VIENTIANE_COLORS = ["#dbebe8", "#fde2dc", "#fdf3d1"]   # row-1, row-2 cols
 _ROTATING_COLORS  = ["#e8f4fd", "#fde7dc", "#fff6dd"]
 
@@ -294,6 +249,8 @@ def build_overview_tab() -> html.Div:
 
     # ── Hidden stores for rotating state ─────────────────────────────────
     stores = html.Div([
+        # NEW: Shared data store for weather and disease stats
+        dcc.Store(id="shared-data-store", data={}),
         dcc.Store(id="rotating-region-index", data=0),   # index into non-Vientiane list
         dcc.Store(id="rotating-region-list",  data=[]),
         dcc.Store(id="current-animal-index",  data=1),   # 1-based (matches ANIMAL_MAP)
@@ -356,18 +313,34 @@ def register_overview_callbacks(app):
     app                     : Dash application instance
     """
 
-    # ── 1. Populate rotating-region-list on page load ────────────────────
+    # ── 1. Load data once and store in shared store ──────────────────────
     @app.callback(
-        Output("rotating-region-list", "data"),
+        Output("shared-data-store", "data"),
         Input("region-rotation-interval", "n_intervals"),
         prevent_initial_call=False,
     )
-    def populate_region_list(_n):
-        _, weather_data = load_overview_data()
+    def load_shared_data(_n):
+        """Load disease stats and weather data once and cache in store."""
+        disease_stats, weather_data = load_overview_data()
+        return {
+            "disease_stats": disease_stats.to_dict('records'),
+            "weather_data": weather_data.to_dict('records')
+        }
+
+    # ── 2. Populate rotating-region-list from shared data ────────────────────
+    @app.callback(
+        Output("rotating-region-list", "data"),
+        Input("shared-data-store", "data"),
+        prevent_initial_call=False,
+    )
+    def populate_region_list(shared_data):
+        if not shared_data:
+            return []
+        weather_data = pd.DataFrame(shared_data["weather_data"])
         regions = weather_data[weather_data["region"] != "Vientiane Capital"]["region"].tolist()
         return regions
 
-    # ── 2. Advance region index (auto-rotation OR manual button) ─────────
+    # ── 3. Advance region index (auto-rotation OR manual button) ─────────
     @app.callback(
         Output("rotating-region-index", "data"),
         Input("region-rotation-interval", "n_intervals"),
@@ -381,7 +354,7 @@ def register_overview_callbacks(app):
             return 0
         return (current_idx + 1) % len(region_list)
 
-    # ── 3. Update weather cards (Vientiane + Rotating) ───────────────────
+    # ── 4. Update weather cards (Vientiane + Rotating) from shared data ───
     @app.callback(
         # Vientiane outputs
         Output("vientiane-title",    "children"),
@@ -400,12 +373,17 @@ def register_overview_callbacks(app):
         Output("rotating-vis",      "children"),
         Output("rotating-sun",      "children"),
         # Triggers
+        Input("shared-data-store", "data"),
         Input("rotating-region-index", "data"),
         State("rotating-region-list",  "data"),
         prevent_initial_call=False,
     )
-    def update_weather_cards(current_idx, region_list):
-        _, weather_data = load_overview_data()
+    def update_weather_cards(shared_data, current_idx, region_list):
+        # Return default values if no data
+        if not shared_data:
+            return ("—", "—", "—", "—", "—", "—", "—") * 2
+
+        weather_data = pd.DataFrame(shared_data["weather_data"])
 
         def _fmt_sun(row):
             try:
@@ -454,17 +432,21 @@ def register_overview_callbacks(app):
             rt, rtemp, rhum, rpres, rwind, rvis, rsun,
         )
 
-    # ── 4. Quick overview chart ──────────────────────────────────────────
+    # ── 5. Quick overview chart from shared data ──────────────────────────
     @app.callback(
         Output("overview-quick-chart", "figure"),
-        Input("region-rotation-interval", "n_intervals"),
+        Input("shared-data-store", "data"),
         prevent_initial_call=False,
     )
-    def update_quick_chart(_n):
-        disease_stats, _ = load_overview_data()
+    def update_quick_chart(shared_data):
+        if not shared_data:
+            # Return empty figure or placeholder
+            import plotly.graph_objects as go
+            return go.Figure()
+        disease_stats = pd.DataFrame(shared_data["disease_stats"])
         return quick_overview_table(disease_stats)
 
-    # ── 5. Animal navigation: prev / next buttons AND auto-rotation ──────
+    # ── 6. Animal navigation: prev / next buttons AND auto-rotation ──────
     @app.callback(
         Output("current-animal-index", "data"),
         Input("animal-prev-btn", "n_clicks"),
@@ -488,16 +470,22 @@ def register_overview_callbacks(app):
         
         return current_idx
 
-    # ── 6. Update animal display (image + name + chart) ──────────────────
+    # ── 7. Update animal display (image + name + chart) from shared data ──
     @app.callback(
         Output("animal-image",        "src"),
         Output("animal-name-display", "children"),
         Output("animal-stats-chart",  "figure"),
+        Input("shared-data-store", "data"),
         Input("current-animal-index", "data"),
         prevent_initial_call=False,
     )
-    def update_animal_section(animal_idx):
-        disease_stats, _ = load_overview_data()
+    def update_animal_section(shared_data, animal_idx):
+        if not shared_data:
+            # Return placeholder values
+            animal_name = ANIMAL_MAP.get(animal_idx, "CATTLE")
+            return f"assets/icons/{animal_idx}.png", animal_name.capitalize(), go.Figure()
+        
+        disease_stats = pd.DataFrame(shared_data["disease_stats"])
         animal_name = ANIMAL_MAP.get(animal_idx, "CATTLE")
         image_src   = f"assets/icons/{animal_idx}.png"
         fig         = display_animal_stats(disease_stats, animal=animal_name)

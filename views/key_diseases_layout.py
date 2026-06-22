@@ -1,35 +1,5 @@
 """
 Key Diseases Tab Layout for Animal Disease Monitoring Dashboard (Dash)
-======================================================================
-Translates the Streamlit KeyDiseasesDashboard into Dash/Plotly.
-
-Note
-----
-`plot_key_disease_distribution` now lives on the Disease Statistics tab
-(below the outbreak-over-time chart), so it has been removed from here.
-The remaining four charts are arranged in a balanced 2x2 grid.
-
-Layout
-------
-  Row 1 (2 equal columns):
-    ├── key_disease_reports_overtime
-    └── key_disease_kde_distribution
-  Row 2 (2 equal columns):
-    ├── key_disease_wrt_location
-    └── plot_disease_code_map
-
-Usage in app.py
----------------
-    from key_diseases_layout import build_key_diseases_tab, register_key_diseases_callbacks
-    dcc.Tab(
-        label='Key Diseases',
-        value='key-diseases',
-        className='custom-tab',
-        selected_className='tab--selected',
-        children=build_key_diseases_tab(),
-    )
-    # After app is created:
-    register_key_diseases_callbacks(app)
 """
 from dash import html, dcc, Input, Output
 import pandas as pd

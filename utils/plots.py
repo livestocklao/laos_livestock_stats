@@ -13,14 +13,16 @@ import matplotlib.pyplot as plt
 from scipy.stats import gaussian_kde
 
 
-
-
 COLORS = ["#0081a7", "#00afb9", "#f07167", "#e9c46a",
           "#264653", "#f4a261", "#e76f51", "#ef233c", "#fed9b7",
           "#f6bd60", "#84a59d", "#f95738", "#fdfcdc"]
 
-
-
+# Oranges (ColorBrewer) sequential palette — used to keep every layer in
+# the same family, from lightest (background) to the full gradient (data).
+_ORANGES_LIGHTEST = "#fff5eb"  
+_ORANGES_LIGHT     = "#fee6ce"  
+_ORANGES_LIGHT_LINE = "#fdae6b"
+_ORANGES_BG_LINE    = "#fdd0a2"
 
 def quick_overview_table(data: pd.DataFrame) -> go.Figure:
     """Toggle between table and chart view with button click."""
@@ -67,7 +69,6 @@ def quick_overview_table(data: pd.DataFrame) -> go.Figure:
         height=400,
     )
     return fig
-
 
 def display_animal_stats(data: pd.DataFrame, animal: str) -> go.Figure:
     import numpy as np
@@ -133,7 +134,6 @@ def display_animal_stats(data: pd.DataFrame, animal: str) -> go.Figure:
     )
     return fig
 
-
 def plot_disease_outbreak_overtime(data):
     data['reported_date'] = pd.to_datetime(
         data['reported_date'],
@@ -185,7 +185,6 @@ def plot_disease_outbreak_overtime(data):
 
     )
     return fig
-
 
 def create_disease_map(data):
     data['reported_date'] = pd.to_datetime(
@@ -325,8 +324,6 @@ def plot_key_disease_distribution(data):
 
     return fig
 
-
-
 def key_disease_reports_overtime(data):
     data['reported_date'] = pd.to_datetime(
         data['reported_date'],
@@ -390,7 +387,6 @@ def key_disease_reports_overtime(data):
     )
     return fig
 
-
 def key_disease_dist_overtime(data):
     data['reported_date'] = pd.to_datetime(
         data['reported_date'],
@@ -439,7 +435,6 @@ def key_disease_dist_overtime(data):
     fig = format_hover_layout(fig)
     return fig
 
-
 def key_disease_kde_distribution(data):
     data['reported_date'] = pd.to_datetime(
         data['reported_date'],
@@ -486,7 +481,6 @@ def key_disease_kde_distribution(data):
 
     fig = format_hover_layout(fig)
     return fig
-
 
 def key_disease_wrt_location(data):
     grouped = (
@@ -545,8 +539,6 @@ def key_disease_wrt_location(data):
     fig = format_hover_layout(fig)
     return fig
 
-
-
 def plot_disease_code_map(data):
     # Aggregate by location, disease_code, and coordinates
     grouped = (
@@ -596,6 +588,8 @@ def plot_disease_code_map(data):
 
     fig = format_hover_layout(fig)
     return fig
+
+
 
 # ----------------------------- WEATHER PAGE -------------------------------------
 def create_weather_map(weather_data):
@@ -696,7 +690,6 @@ def create_weather_map(weather_data):
 
     return fig
 
-
 def create_weather_charts(weather_data):
     """
     Create temperature and humidity comparison charts using go.Figure
@@ -789,6 +782,7 @@ def create_weather_charts(weather_data):
 
 
 
+# ----------------------------- UTILITY FUNCTIONS -------------------------------------
 
 def format_hover_layout(fig):
     fig = fig.update_layout(
@@ -797,7 +791,6 @@ def format_hover_layout(fig):
         hoverlabel=dict(bgcolor="white", font_color="black",
                         font_size=12, font_family="Rockwell"))
     return fig
-
 
 def format_currency_label(value):
     """
@@ -814,7 +807,6 @@ def format_currency_label(value):
         return f'{value / 1e3:.1f} K'
     else:
         return f'{value}'
-
 
 def calculate_disease_metrics(
         database: pd.DataFrame
@@ -838,6 +830,7 @@ def calculate_disease_metrics(
     }
 
     return metrics
+
 
 
 # =====================livestock stats =============================
@@ -937,7 +930,6 @@ def create_livestock_year_chart(df_2024, df_2025):
     
     return fig
 
-
 def create_livestock_composition_chart(df, year="2024"):
     cols = [c for c in df.columns if c != 'Province']
     species_totals = df[cols].sum()
@@ -1001,7 +993,6 @@ def create_livestock_composition_chart(df, year="2024"):
     )
     
     return fig
-
 
 def create_livestock_animal_type_charts(data_farm, data_amount):
     cols = [c for c in data_farm.columns if c != 'Province']
@@ -1138,192 +1129,10 @@ def create_district_stats_bar_chart(df_province, animal_col):
     )
     return fig
 
-
-
-# Oranges (ColorBrewer) sequential palette — used to keep every layer in
-# the same family, from lightest (background) to the full gradient (data).
-_ORANGES_LIGHTEST = "#fff5eb"   # national boundary fill
-_ORANGES_LIGHT     = "#fee6ce"  # "no data" province fill
-_ORANGES_LIGHT_LINE = "#fdae6b" # "no data" province outline
-_ORANGES_BG_LINE    = "#fdd0a2" # national boundary outline
- 
- 
-# def _detect_name_key(properties: dict, candidates=("NAME_1", "shapeName", "name", "Province", "province",
-#                                                      "NAME", "ADM0_NAME", "COUNTRY", "admin")):
-#     """Pick the most likely property key holding a place name."""
-#     return next((k for k in candidates if k in properties), None)
- 
- 
-# def _add_country_background(fig: go.Figure, country_geojson_path: str) -> None:
-#     """Bottom layer: national Laos boundary, light fill, drawn first so
-#     every other trace renders on top of it."""
-#     try:
-#         with open(country_geojson_path, "r", encoding="utf-8") as f:
-#             country_geo = json.load(f)
-#     except FileNotFoundError:
-#         return  # optional layer — skip quietly if the file isn't there
- 
-#     if country_geo.get("type") == "Feature":
-#         features = [country_geo]
-#         country_geo = {"type": "FeatureCollection", "features": features}
-#     else:
-#         features = country_geo.get("features", [])
- 
-#     if not features:
-#         return
- 
-#     props = features[0].get("properties") or {}
-#     name_key = _detect_name_key(props)
- 
-#     if name_key:
-#         fig.add_trace(go.Choropleth(
-#             geojson=country_geo,
-#             locations=[props[name_key]],
-#             z=[1],
-#             featureidkey=f"properties.{name_key}",
-#             colorscale=[[0, _ORANGES_LIGHTEST], [1, _ORANGES_LIGHTEST]],
-#             showscale=False,
-#             marker_line_color=_ORANGES_BG_LINE,
-#             marker_line_width=1.5,
-#             hoverinfo="skip",
-#         ))
-#     else:
-#         # No usable properties field — fall back to the feature's top-level
-#         # "id" (Plotly's default match target when featureidkey is omitted).
-#         feat_id = features[0].get("id", "laos")
-#         fig.add_trace(go.Choropleth(
-#             geojson=country_geo,
-#             locations=[feat_id],
-#             z=[1],
-#             colorscale=[[0, _ORANGES_LIGHTEST], [1, _ORANGES_LIGHTEST]],
-#             showscale=False,
-#             marker_line_color=_ORANGES_BG_LINE,
-#             marker_line_width=1.5,
-#             hoverinfo="skip",
-#         ))
- 
- 
-# def _add_remaining_provinces_background(fig: go.Figure, geojson: dict, name_key: str, present_names) -> None:
-#     """Middle layer: every province boundary, light fill — guarantees the
-#     full set of provinces is always visible even where data is missing."""
-#     present = set(present_names)
-#     all_names = [feat["properties"].get(name_key) for feat in geojson["features"]]
-#     remaining = [n for n in all_names if n is not None and n not in present]
- 
-#     if not remaining:
-#         return
- 
-#     fig.add_trace(go.Choropleth(
-#         geojson=geojson,
-#         locations=remaining,
-#         z=[1] * len(remaining),
-#         featureidkey=f"properties.{name_key}",
-#         colorscale=[[0, _ORANGES_LIGHT], [1, _ORANGES_LIGHT]],
-#         showscale=False,
-#         marker_line_color=_ORANGES_LIGHT_LINE,
-#         marker_line_width=1,
-#         hovertemplate="<b>%{location}</b><br>No data<extra></extra>",
-#     ))
- 
- 
-# def create_livestock_province_map(
-#     df,
-#     animal_col: str,
-#     province_col: str = "Province",
-#     geojson_path: str = "assets/geo/laos_provinces.geojson",
-#     country_geojson_path: str = "assets/geo/laos.geojson",
-# ):
-#     """
-#     Build a province-boundary choropleth of Laos coloured by livestock count,
-#     layered over a national outline and a "no data" province background so
-#     the full country shape is always visible.
- 
-#     Parameters
-#     ----------
-#     df : pd.DataFrame
-#         One row per province, with a `province_col` column and at least
-#         one numeric column to visualise (e.g. 'Buffalo', or a precomputed
-#         'Total' column).
-#     animal_col : str
-#         Name of the column in `df` to use as the colour value.
-#     province_col : str
-#         Name of the province column in `df`. Default "Province".
-#     geojson_path : str
-#         Path to a GeoJSON file with one feature per province.
-#     country_geojson_path : str
-#         Path to a GeoJSON file with the national Laos boundary. Optional —
-#         if missing, that background layer is simply skipped.
- 
-#     Returns
-#     -------
-#     plotly.graph_objects.Figure
-#     """
-#     try:
-#         with open(geojson_path, "r", encoding="utf-8") as f:
-#             geojson = json.load(f)
-#     except FileNotFoundError:
-#         fig = go.Figure()
-#         fig.add_annotation(
-#             text=f"Province boundary file not found.<br>Expected at: {geojson_path}",
-#             xref="paper", yref="paper", x=0.5, y=0.5, showarrow=False,
-#             font=dict(size=14, color="#888"),
-#         )
-#         fig.update_layout(
-#             plot_bgcolor="white", paper_bgcolor="white",
-#             xaxis=dict(visible=False), yaxis=dict(visible=False),
-#             margin=dict(l=10, r=10, t=10, b=10),
-#         )
-#         return fig
- 
-#     sample_props = geojson["features"][0]["properties"]
-#     name_key = _detect_name_key(sample_props) or list(sample_props.keys())[0]
- 
-#     fig = go.Figure()
- 
-#     # Layer 1 (bottom / "z -100"): national outline ------------------------
-#     _add_country_background(fig, country_geojson_path)
- 
-#     # Layer 2 (middle): full province set, light fill -----------------------
-#     _add_remaining_provinces_background(fig, geojson, name_key, df[province_col])
- 
-#     # Layer 3 (top): actual data choropleth ----------------------------------
-#     fig.add_trace(go.Choropleth(
-#         geojson=geojson,
-#         locations=df[province_col],
-#         z=df[animal_col],
-#         featureidkey=f"properties.{name_key}",
-#         colorscale="Oranges",
-#         marker_line_color="white",
-#         marker_line_width=1,
-#         colorbar=dict(title=animal_col, thickness=14, len=0.75),
-#         hovertemplate="<b>%{location}</b><br>" + animal_col + ": %{z:,.0f}<extra></extra>",
-#     ))
- 
-#     fig.update_geos(
-#         fitbounds="locations",
-#         visible=False,
-#         bgcolor="rgba(0,0,0,0)",
-#         # projection_scale=1.5,
-#     )
-#     fig.update_layout(
-#         paper_bgcolor="white",
-#         plot_bgcolor="white",
-#         margin=dict(l=0, r=0, t=0, b=0),
-#         geo=dict(bgcolor="rgba(0,0,0,0)"),
-#         showlegend=False,
-#         height=600,
-#         # mapbox=dict(
-#         #     zoom=6.5
-#         # ),
-#     )
-#     return fig
-
-
 def _detect_name_key(properties: dict, candidates=("NAME_1", "shapeName", "name", "Province", "province",
                                                      "NAME", "ADM0_NAME", "COUNTRY", "admin")):
     """Pick the most likely property key holding a place name."""
     return next((k for k in candidates if k in properties), None)
-
 
 def _add_country_background(fmap: folium.Map, country_geojson_path: str) -> None:
     """Bottom layer: national Laos boundary, light fill, drawn first so
@@ -1352,7 +1161,6 @@ def _add_country_background(fmap: folium.Map, country_geojson_path: str) -> None
         highlight_function=lambda feature: {"fillOpacity": 1},
         control=False,
     ).add_to(fmap)
-
 
 def _add_remaining_provinces_background(fmap: folium.Map, geojson: dict, name_key: str, present_names) -> None:
     """Middle layer: every province boundary, light fill — guarantees the

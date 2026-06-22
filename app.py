@@ -1,18 +1,8 @@
-# app.py
-# ─────────────────────────────────────────────────────────────────────────────
-# Two-page Dash app using dcc.Location for client-side routing:
-#   /        → main dashboard  (tabs: Overview, Livestock, Disease, etc.)
-#   /admin   → admin panel     (protected by auth-store)
-#
-# The header (logo, clock, Admin button, footer logos) renders on BOTH pages.
-# The login modal also lives at top-level so it works from any page.
-# ─────────────────────────────────────────────────────────────────────────────
-
 import os
 from datetime import datetime
 
 from dotenv import load_dotenv
-load_dotenv()   # loads ADMIN_USERNAME / ADMIN_PASSWORD from .env
+load_dotenv()
 
 import dash
 from dash import html, dcc, ctx

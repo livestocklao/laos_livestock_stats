@@ -1,32 +1,5 @@
 """
 Disease Statistics Tab Layout for Animal Disease Monitoring Dashboard (Dash)
-============================================================================
-Translates the Streamlit DiseaseStatsDashboard into Dash/Plotly.
-
-Layout
-------
-  ┌─────────────────────────────────────────────────────────┐
-  │  LEFT (map, taller)   │  RIGHT                           │
-  │                       │  ┌──────┬──────┬──────┐          │
-  │  create_disease_map   │  │Cases │Viral │Region│  metrics │
-  │                       │  └──────┴──────┴──────┘          │
-  │                       │  plot_disease_outbreak_overtime   │
-  │                       │  plot_key_disease_distribution    │
-  └─────────────────────────────────────────────────────────┘
-
-Usage in app.py
----------------
-    from disease_stats_layout import build_disease_stats_tab, register_disease_stats_callbacks
-
-    dcc.Tab(
-        label='Disease Statistics',
-        value='disease-statistics',
-        className='custom-tab',
-        selected_className='tab--selected',
-        children=build_disease_stats_tab(),
-    )
-
-    register_disease_stats_callbacks(app)
 """
 
 from dash import html, dcc, Input, Output

@@ -1,38 +1,5 @@
 """
 Global Health News Tab Layout for Animal Disease Monitoring Dashboard (Dash)
-============================================================================
-Translates the Streamlit GlobalNewsDashboard into Dash/Plotly.
-
-Layout
-------
-  ┌──────────────────────────────────────────────────────────────┐
-  │  TOP ROW                                                     │
-  │  [Total] [Press Rel] [Newsletter] [Statements] [Latest]  🔍  │
-  │                                               [Year ▾]       │
-  ├──────────────────────────────────────────────────────────────┤
-  │  ARTICLES GRID  (3 per row, paginated)                       │
-  │  ┌──────────┐  ┌──────────┐  ┌──────────┐                   │
-  │  │ image    │  │ image    │  │ image    │                    │
-  │  │ title    │  │ title    │  │ title    │                    │
-  │  │ date     │  │ date     │  │ date     │                    │
-  │  │ excerpt  │  │ excerpt  │  │ excerpt  │                    │
-  │  │ tag  btn │  │ tag  btn │  │ tag  btn │                    │
-  │  └──────────┘  └──────────┘  └──────────┘                   │
-  └──────────────────────────────────────────────────────────────┘
-
-Usage in app.py
----------------
-    from global_news_layout import build_global_news_tab, register_global_news_callbacks
-
-    dcc.Tab(
-        label='Global Health News',
-        value='global-health-news',
-        className='custom-tab',
-        selected_className='tab--selected',
-        children=build_global_news_tab(),
-    )
-
-    register_global_news_callbacks(app)
 """
 
 from dash import html, dcc, Input, Output, State, ALL
