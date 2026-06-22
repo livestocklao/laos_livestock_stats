@@ -1,15 +1,3 @@
-"""
-Provides:
-  - General Settings  (autorefresh interval, timezone)
-  - Disease Settings  (key diseases multiselect)
-  - Disease Stats editor (year + per-animal metrics + save to Sheets)
-  - Add New Case form
-  - Logout
-
-Auth gate: every callback checks auth-store before rendering real content.
-App-level settings are persisted in app-settings-store (dcc.Store, session).
-"""
-
 import pandas as pd
 from datetime import datetime, date
 
@@ -18,15 +6,15 @@ from dash import html, dcc, ctx
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-# ── your existing data-loader helpers ─────────────────────────────────────────
-# Adjust import path to match your project structure
 from utils.data_loader import (
-    load_data,
+    load_data_package,
     refresh_all_data,
     update_disease_stats_worksheet,
     add_new_case_to_database,
 )
 
+import logging
+logger = logging.getLogger(__name__)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Layout builder
@@ -112,6 +100,8 @@ def build_admin_panel():
         dcc.Store(id='ap-disease-stats-store', data=None),
         dcc.Store(id='ap-database-store',      data=None),
         dcc.Store(id='ap-geo-store',           data=None),
+        dcc.Store(id='ap-flash-trigger', data=None),
+
 
     ], className='ap-container', id='ap-container')
 
@@ -349,19 +339,25 @@ def register_admin_callbacks(app: dash.Dash) -> None:
     def load_admin_data(n, auth_data):
         if not (auth_data and auth_data.get('is_authenticated')):
             raise PreventUpdate
+        
         try:
-            data = load_data()
-            disease_stats_data = data[0]
-            database           = data[1]
-            disease_codes      = data[2]
-            geo_data           = data[3]
+            # Load main data package
+            data_package = load_data_package()
+            
+            # Convert DataFrames to dict records
+            disease_stats_data = data_package.disease_stats.to_dict('records')
+            database = data_package.database.to_dict('records')
+            disease_codes = data_package.disease_codes.to_dict('records')
+            geo_data = data_package.geo_data.to_dict('records')
+            
             return (
-                disease_codes.to_dict('records'),
-                disease_stats_data.to_dict('records'),
-                database.to_dict('records'),
-                geo_data.to_dict('records'),
+                disease_codes,
+                disease_stats_data,
+                database,
+                geo_data,
             )
-        except Exception:
+        except Exception as e:
+            logger.error(f"Failed to load admin data: {e}")
             raise PreventUpdate
 
 
@@ -590,10 +586,13 @@ def register_admin_callbacks(app: dash.Dash) -> None:
 
         # Push to Sheets
         upload_df = stats_df.copy()
-        upload_df.columns = [c.capitalize() for c in upload_df.columns]
+        # Capitalize column names to match original format
+        upload_df.columns = [c.capitalize() if c != 'year' else 'Year' for c in upload_df.columns]
+        
         try:
             success = update_disease_stats_worksheet(upload_df)
             if success:
+                # Refresh data and update stores
                 refresh_all_data()
                 return (
                     stats_df.to_dict('records'),
@@ -697,19 +696,41 @@ def register_admin_callbacks(app: dash.Dash) -> None:
         if not n:
             raise PreventUpdate
         return None, None, 1, ''
-
+    
+    @app.callback(
+        Output('ap-disease-codes-store', 'data', allow_duplicate=True),
+        Output('ap-disease-stats-store', 'data', allow_duplicate=True),
+        Output('ap-database-store',      'data', allow_duplicate=True),
+        Output('ap-geo-store',           'data', allow_duplicate=True),
+        Input('ap-stats-save-btn',       'n_clicks'),
+        Input('ap-case-submit-btn',      'n_clicks'),
+        prevent_initial_call=True
+    )
+    def refresh_stores_after_write(*args):
+        """Refresh store data after any write operation."""
+        if not any(args):
+            raise PreventUpdate
+        
+        try:
+            data_package = load_data_package()
+            return (
+                data_package.disease_codes.to_dict('records'),
+                data_package.disease_stats.to_dict('records'),
+                data_package.database.to_dict('records'),
+                data_package.geo_data.to_dict('records'),
+            )
+        except Exception as e:
+            logger.error(f"Failed to refresh stores: {e}")
+            raise PreventUpdate
 
     # ── 14. Auto-clear flash after 4 s ────────────────────────────────────
     @app.callback(
-        Output('ap-flash', 'children',  allow_duplicate=True),
-        Output('ap-flash', 'className', allow_duplicate=True),
-        Input('ap-flash',  'children'),
+        Output('ap-flash-trigger', 'data'),
+        Input('ap-flash', 'children'),
         prevent_initial_call=True
     )
-    def schedule_flash_clear(msg):
-        """
-        Clears the flash message on the *next* render after it's set.
-        For a proper timed clear, use a clientside_callback with setTimeout.
-        See the comment in app.py for the optional JS approach.
-        """
-        raise PreventUpdate   # Leave as-is; wire clientside below if desired
+    def trigger_flash_timer(msg):
+        """Trigger the clientside timer when flash message appears."""
+        if msg and msg != '':
+            return {'msg': str(msg), 'timestamp': datetime.now().isoformat()}
+        raise PreventUpdate

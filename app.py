@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import dash
+# from flask import jsonify
 from dash import html, dcc, ctx
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
@@ -18,11 +19,13 @@ from views.weather_info_layout    import build_weather_info_tab,    register_wea
 from views.global_health_news_layout import build_global_news_tab,  register_global_news_callbacks
 
 # ── Admin panel (separate page) ───────────────────────────────────────────────
-# from views.admin_panel_layout import build_admin_panel, register_admin_callbacks
+from views.admin_panel_layout import register_admin_callbacks
 
 
-from utils.data_loader import initialize_data
+from utils.data_loader import initialize_data, health_check, refresh_all_data
+import logging
 
+logger = logging.getLogger(__name__)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # App init
@@ -283,6 +286,7 @@ app.layout = html.Div([
     # ── Persistent stores (survive page refresh within the same browser tab)
     dcc.Store(id='auth-store',         storage_type='session', data=_AUTH_STORE_DEFAULT),
     dcc.Store(id='app-settings-store', storage_type='session', data=_SETTINGS_STORE_DEFAULT),
+    dcc.Store(id='data-loading-store', storage_type='memory', data={'is_loading': False, 'error': None}),
 
     # ── Login modal (always in DOM, hidden by default) ────────────────────
     _build_login_modal(),
@@ -295,6 +299,15 @@ app.layout = html.Div([
 
     # ── Clock interval ────────────────────────────────────────────────────
     dcc.Interval(id='date-time-interval', interval=1000, n_intervals=0),
+    dcc.Interval(id='auto-refresh-interval', interval=60*1000, n_intervals=0),  # Default 60 seconds, configurable
+    
+    dcc.Loading(
+        id="global-loading",
+        type="circle",
+        children=html.Div(id="loading-output"),
+        fullscreen=True,
+    ),
+    html.Div(id='global-error-display', className='global-error', style={'display': 'none'}),
 
 ], className='app-container')
 
@@ -303,19 +316,25 @@ app.layout = html.Div([
 # Routing callback  —  swaps page-content based on URL pathname
 # ─────────────────────────────────────────────────────────────────────────────
 
+# In app.py, replace the route function with:
 @app.callback(
     Output('page-content', 'children'),
     Input('url', 'pathname'),
+    State('auth-store', 'data'),
 )
-def route(pathname):
+def route(pathname, auth_data):
     """
     /        → dashboard (tabs)
-    /admin   → admin panel
+    /admin   → admin panel (only if authenticated)
     anything else → redirect to dashboard
     """
     if pathname == '/admin':
-        return _build_dashboard_page()
-        # return build_admin_panel()
+        if auth_data and auth_data.get('is_authenticated'):
+            from views.admin_panel_layout import build_admin_panel
+            return build_admin_panel()
+        else:
+            # Redirect to dashboard if not authenticated
+            return _build_dashboard_page()
     return _build_dashboard_page()
 
 
@@ -425,10 +444,6 @@ def update_admin_label(auth_data):
 # Clock
 # ─────────────────────────────────────────────────────────────────────────────
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Clock
-# ─────────────────────────────────────────────────────────────────────────────
-
 @app.callback(
     Output('date-time-display', 'children'),
     Input('date-time-interval', 'n_intervals'),
@@ -446,21 +461,73 @@ def update_clock(n):
         ], className="date-time-span")
     ], className="date-time-wrapper")
     
+@app.callback(
+    Output('data-loading-store', 'data'),
+    Input('auto-refresh-interval', 'n_intervals'),
+    State('app-settings-store', 'data'),
+    prevent_initial_call=True
+)
+def auto_refresh_data(n, settings):
+    """Periodic data refresh based on settings."""
+    if n is None or n == 0:
+        raise PreventUpdate
+    
+    try:
+        interval = settings.get('autorefresh_interval', 60) if settings else 60
+        refresh_all_data()
+        return {'is_loading': False, 'error': None, 'last_refresh': datetime.now().isoformat()}
+    except Exception as e:
+        logger.error(f"Auto-refresh failed: {e}")
+        return {'is_loading': False, 'error': str(e)}
+    
+@app.callback(
+    Output('global-error-display', 'children'),
+    Output('global-error-display', 'style'),
+    Input('data-loading-store', 'data'),
+)
+def display_errors(data):
+    """Display global errors if any."""
+    if data and data.get('error'):
+        return (
+            html.Div([
+                html.Span('⚠️ '),
+                html.Span(f"Data loading error: {data['error']}"),
+                html.Button('Retry', id='retry-data-btn', className='retry-btn'),
+            ], className='error-container'),
+            {'display': 'block'}
+        )
+    return '', {'display': 'none'}
+
+@app.callback(
+    Output('loading-output', 'children'),
+    Input('data-loading-store', 'data'),
+)
+def update_loading_state(data):
+    """Update loading state display."""
+    if data and data.get('is_loading'):
+        return html.Div("Loading data...", className='loading-message')
+    return ''
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Register all callbacks
 # ─────────────────────────────────────────────────────────────────────────────
 
-initialize_data()
-
+try:
+    logger.info("Starting initial data load...")
+    initialize_data()
+    logger.info("Initial data load completed successfully")
+except Exception as e:
+    logger.error(f"Failed to load initial data: {e}")
+    
+    
 register_overview_callbacks(app)
 register_livestock_stats_callbacks(app)
 register_disease_stats_callbacks(app)
 register_key_diseases_callbacks(app)
 register_weather_info_callbacks(app)
 register_global_news_callbacks(app)
-# register_admin_callbacks(app)
+register_admin_callbacks(app)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -487,6 +554,19 @@ app.clientside_callback(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+
+# @app.server.route('/health')
+# def health():
+#     """Health check endpoint for monitoring."""
+#     status = health_check()
+#     return jsonify(status)
+
+# @app.server.route('/api/cache-stats')
+# def cache_stats():
+#     """Cache statistics endpoint."""
+#     from utils.data_loader import get_cache_stats
+#     stats = get_cache_stats()
+#     return jsonify(stats)
 
 if __name__ == '__main__':
     app.run(debug=False, host="0.0.0.0", port=int(os.environ.get("PORT", 8050)))
