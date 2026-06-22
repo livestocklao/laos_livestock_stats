@@ -1,0 +1,1112 @@
+/* General Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* App Container */
+.app-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Section */
+/* Header Section */
+.header-section {
+    background-color: #fff;
+    padding: 5px;
+    padding-bottom:2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-top-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    height: 130px;
+    margin-bottom:5px;
+}
+
+/* Container 1: Header Image (Longer) */
+.container-1-header {
+    flex: 2;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); */
+}
+
+.container-1-header img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Container 2: Date/Time and Logos */
+.container-2-header {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-left:240px;
+}
+
+/* Parallel row for date-time and empty container */
+.parallel-row {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+    min-height: 0;
+}
+
+/* ── Admin button (fills sub-container-empty) ─────────────────────────── */
+.admin-btn-container {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;                       /* override the 0.5 from sub-container-empty */
+    border: 1px solid #94a3b8;
+    background: linear-gradient(135deg, #dfe3e7 0%, #c2c8ce 100%);
+    transition: all 0.3s ease;
+    user-select: none;
+    flex: 0.4;  /* Make admin container smaller */
+    min-width: 120px;  /* Ensure it doesn't get too small */
+}
+
+.admin-btn-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(135deg, #c2c8ce 0%, #a8b2bb 100%);
+    border-color: #64748b;
+}
+
+.admin-btn-container:active {
+    transform: translateY(0px);
+    box-shadow: none;
+}
+
+.admin-btn-label {
+    font-size: 20px;
+    font-weight: 500;
+    color: #1e293b;
+    letter-spacing: 0.03em;
+    pointer-events: none;             /* clicks pass through to the container */
+}
+
+
+/* Container 2: Date/Time and Logos */
+.container-2-header {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-left:240px;
+}
+
+/* Parallel row for date-time and empty container */
+.parallel-row {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+    min-height: 0;
+    align-items: stretch;
+}
+
+/* Date and Time Container (Left column) */
+.sub-container-date-time {
+    flex: 1.6;  /* Make date/time container bigger */
+    background: linear-gradient(135deg, #dfe3e7 0%, #c2c8ce 100%);
+    border-radius: 30px;
+    padding: 8px 16px;  /* Slightly more padding */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.sub-container-date-time:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Empty Container (Right column) - parallel to date-time */
+.sub-container-empty {
+    flex: 1;
+    background: transparent;
+    border-radius: 30px;
+    min-height: 0;
+}
+
+.date-time-wrapper {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;  /* Space between icon and text */
+}
+
+.date-time-span {
+    text-align: center;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;  /* Space between time and date */
+    font-size: 20px;  /* Consistent font size */
+}
+
+.time-text {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1b3a5c;
+    display: flex;
+    align-items: center;
+    gap: 6px;  /* Space between icon and time */
+}
+
+.date-text {
+    font-size: 20px;  /* Same size as time */
+    opacity: 0.9;
+    color: #2c4a6e;
+    display: flex;
+    align-items: center;
+    gap: 6px;  /* Space between icon and date */
+}
+
+/* Icons styling */
+.time-icon, .date-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+/* Add these styles to your existing CSS */
+.time-icon, .date-icon {
+    font-size: 22px;
+    margin-right: 4px;
+}
+
+.date-time-span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 20px;
+    white-space: nowrap;
+}
+
+.time-text {
+    font-weight: bold;
+    color: #1b3a5c;
+}
+
+.date-text {
+    opacity: 0.9;
+    color: #2c4a6e;
+}
+
+/* Logos Container (Below the parallel row) */
+.sub-container-logos {
+    flex: 1;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0;
+    margin-top: 2px;
+    border-radius: 8px;
+    min-height: 0;
+}
+
+.logo-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 5px auto;
+    border: 1px solid #e0e0e0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-width: 0;
+}
+
+.logo-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.brand-logo {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+/* Empty container parallel to date-time (optional styling) */
+.sub-container-empty {
+    flex: 1;
+    background: linear-gradient(135deg, #f0f4f8 0%, #e8eef4 100%);
+    border-radius: 30px;
+    min-height: 0;
+    /* Add a subtle border or keep it completely empty as requested */
+    border: 1px dashed #cbd5e1;
+    opacity: 0.5;
+}
+
+/* Main Body */
+.main-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    margin: 2px;
+    /* border-radius: 8px; */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+}
+/* Tabs container */
+.custom-tabs-container {
+    background-color: #f9f9f9;
+    padding: 10px;
+    /* border-radius: 10px; */
+    /* box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1); */
+    border-bottom: none !important;  /* remove Dash default border */
+}
+
+/* Strip Dash's default tab styles */
+.custom-tabs-container .custom-tab {
+    background-color: transparent !important;
+    border: none !important;
+    border-top: none !important;    /* Dash adds a top border by default */
+    font-size: 18px;
+    font-weight: 500;
+    color: rgb(124, 123, 123);
+    padding: 5px 8px;
+    cursor: pointer;
+    margin: 0px 2px;
+}
+
+/* Selected tab */
+.custom-tabs-container .custom-tab.tab--selected {
+    background-color: #2a9d8f !important;
+    color: white !important;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    font-weight: 700;
+    border-top: none !important;
+}
+
+/* Hover */
+.custom-tabs-container .custom-tab:hover {
+    background-color: #e9e9e9 !important;
+    border-radius: 5px;
+}
+
+
+
+/* ── Modal overlay ──────────────────────────────────────────────────────── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-hidden  { display: none;  }
+.modal-visible { display: flex;  }
+
+.modal-box {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 28px 32px;
+    width: 360px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #64748b;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    line-height: 1;
+    transition: background 0.2s;
+}
+
+.modal-close-btn:hover { background: #f1f5f9; }
+
+.modal-subtitle {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0 0 20px;
+}
+
+.modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 14px;
+}
+
+.modal-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #0f172a;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.modal-input:focus { border-color: #3b82f6; }
+
+.modal-error {
+    font-size: 13px;
+    color: #dc2626;
+    min-height: 18px;
+    margin-bottom: 10px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 9px 0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.modal-btn:active { transform: scale(0.98); }
+
+.modal-btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.modal-btn-primary:hover  { background: #1d4ed8; }
+
+.modal-btn-secondary {
+    background: #f1f5f9;
+    color: #374151;
+    border: 1px solid #cbd5e1;
+}
+
+.modal-btn-secondary:hover { background: #e2e8f0; }
+
+/* Main Content Area */
+.main-content-area {
+    flex: 1;
+    padding: 5px;
+    overflow-y: auto;
+    margin-top: 0;
+    padding-top:0;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .header-top-row {
+        flex-direction: column;
+    }
+
+    .container-1-header {
+        flex: 1;
+        min-height: 100px;
+    }
+
+    .container-2-header {
+        flex: 1;
+    }
+
+    .sub-container-logos {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-section {
+        padding: 15px;
+    }
+
+    .header-top-row {
+        gap: 15px;
+    }
+
+    .sub-container-logos {
+        gap: 10px;
+    }
+
+    .logo-item {
+        height: 60px;
+    }
+
+    .time-text {
+        font-size: 20px;
+    }
+
+    .date-text {
+        font-size: 12px;
+    }
+
+    .tab-content {
+        padding: 15px;
+    }
+
+    .tab-content h2 {
+        font-size: 22px;
+    }
+
+    .main-body {
+        margin: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-section {
+        padding: 10px;
+    }
+
+    .container-1-header {
+        min-height: 120px;
+    }
+
+    .sub-container-logos {
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .logo-item {
+        height: 50px;
+        padding: 8px;
+    }
+
+    .time-text {
+        font-size: 18px;
+    }
+
+    .date-text {
+        font-size: 11px;
+    }
+}
+
+/* ========== Overview Dashboard Styles ========== */
+
+.overview-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.overview-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+/* Cards Container */
+.overview-cards-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+}
+
+.overview-cards-left,
+.overview-cards-right {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Overview Cards */
+.overview-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-height: 140px;
+    display: flex;
+    align-items: center;
+}
+
+.overview-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.card-inner {
+    width: 100%;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #264653;
+    margin-bottom: 5px;
+}
+
+.card-subtitle {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 12px;
+}
+
+/* Weather Cards */
+.weather-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.weather-card .card-title {
+    color: white;
+}
+
+.weather-card .card-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.weather-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.weather-temp {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.weather-condition {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.weather-forecast {
+    display: flex;
+    gap: 15px;
+    font-size: 16px;
+}
+
+.weather-high {
+    color: #ff6b6b;
+    font-weight: 600;
+}
+
+.weather-low {
+    color: #4ecdc4;
+    font-weight: 600;
+}
+
+/* Region Cards */
+.region-card,
+.animal-card {
+    background: linear-gradient(135deg, #2a9d8f 0%, #1f7d7a 100%);
+    color: white;
+}
+
+.region-card .card-title,
+.animal-card .card-title {
+    color: white;
+}
+
+.region-card .card-subtitle,
+.animal-card .card-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.region-content,
+.animal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.region-stat,
+.animal-stat {
+    font-size: 13px;
+    padding: 5px 0;
+    opacity: 0.95;
+    border-left: 3px solid rgba(255, 255, 255, 0.5);
+    padding-left: 10px;
+}
+
+/* Figures Container */
+.overview-figures-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+}
+
+.overview-figure {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.table-figure,
+.chart-figure {
+    min-height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Plotly Chart Responsive */
+.overview-figure .plotly-graph-div {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* ========== Responsive Overview Styles ========== */
+
+@media (max-width: 1200px) {
+    .overview-cards-container {
+        grid-template-columns: 1fr;
+    }
+
+    .overview-figures-container {
+        grid-template-columns: 1fr;
+    }
+
+    .overview-card {
+        min-height: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .overview-container {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .overview-cards-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .overview-figures-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .overview-card {
+        padding: 15px;
+        min-height: 110px;
+    }
+
+    .overview-figure {
+        padding: 15px;
+        min-height: 300px;
+    }
+
+    .card-title {
+        font-size: 14px;
+    }
+
+    .card-subtitle {
+        font-size: 11px;
+    }
+
+    .weather-temp {
+        font-size: 28px;
+    }
+
+    .weather-forecast {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .region-stat,
+    .animal-stat {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .overview-container {
+        padding: 10px;
+        gap: 12px;
+    }
+
+    .overview-cards-container,
+    .overview-figures-container {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .overview-card {
+        padding: 12px;
+        min-height: 100px;
+    }
+
+    .overview-figure {
+        padding: 10px;
+        min-height: 280px;
+    }
+
+    .card-title {
+        font-size: 13px;
+    }
+
+    .card-subtitle {
+        font-size: 10px;
+    }
+
+    .weather-temp {
+        font-size: 24px;
+    }
+
+    .weather-content {
+        gap: 10px;
+    }
+
+    .weather-condition {
+        font-size: 12px;
+    }
+
+    .region-stat,
+    .animal-stat {
+        font-size: 11px;
+        padding-left: 8px;
+    }
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Admin Panel  —  append to assets/style.css
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Outer container ───────────────────────────────────────────────────── */
+.ap-container {
+    padding: 16px 20px;
+    min-height: 500px;
+}
+
+/* ── Auth gate ─────────────────────────────────────────────────────────── */
+.ap-auth-gate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.ap-gate-box {
+    text-align: center;
+    padding: 40px 48px;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 14px;
+}
+
+.ap-gate-icon  { font-size: 40px; display: block; margin-bottom: 12px; }
+.ap-gate-title { margin: 0 0 8px; font-size: 18px; color: #1e293b; }
+.ap-gate-sub   { margin: 0; font-size: 14px; color: #64748b; }
+
+/* ── Panel header row ──────────────────────────────────────────────────── */
+.ap-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.ap-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.ap-logout-btn {
+    padding: 8px 18px;
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.ap-logout-btn:hover { background: #fecaca; }
+
+/* ── Dividers ──────────────────────────────────────────────────────────── */
+.ap-divider       { border: none; border-top: 1px solid #e2e8f0; margin: 10px 0 14px; }
+.ap-inner-divider { border: none; border-top: 1px solid #f1f5f9; margin: 14px 0 10px; }
+
+/* ── Flash message ─────────────────────────────────────────────────────── */
+.ap-flash {
+    min-height: 24px;
+    font-size: 13px;
+    margin-bottom: 10px;
+    padding: 0 4px;
+    border-radius: 6px;
+    transition: opacity 0.3s;
+}
+
+.ap-flash-success { color: #15803d; background: #f0fdf4; padding: 8px 12px; }
+.ap-flash-error   { color: #b91c1c; background: #fef2f2; padding: 8px 12px; }
+.ap-flash-warning { color: #92400e; background: #fffbeb; padding: 8px 12px; }
+
+/* ── Three-column body ─────────────────────────────────────────────────── */
+.ap-body-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.ap-col         { display: flex; flex-direction: column; gap: 16px; }
+.ap-col-narrow  { flex: 0 0 220px; }
+.ap-col-wide    { flex: 1; min-width: 0; }
+
+/* ── Cards ─────────────────────────────────────────────────────────────── */
+.ap-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ap-card-title {
+    margin: 0 0 2px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.ap-sub-title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+}
+
+/* ── Labels ────────────────────────────────────────────────────────────── */
+.ap-label        { font-size: 12px; font-weight: 500; color: #374151; display: block; }
+.ap-label-spaced { margin-top: 6px; }
+
+/* ── Dropdowns ─────────────────────────────────────────────────────────── */
+.ap-dropdown         { font-size: 13px; }
+.ap-dropdown-narrow  { max-width: 120px; }
+
+/* ── Slider ────────────────────────────────────────────────────────────── */
+.ap-slider         { margin: 4px 0; }
+.ap-slider-display {
+    font-size: 12px;
+    color: #64748b;
+    text-align: right;
+    margin-top: -6px;
+}
+
+/* ── Number input ──────────────────────────────────────────────────────── */
+.ap-number-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #0f172a;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.ap-number-input:focus { border-color: #3b82f6; }
+
+/* ── Textarea ──────────────────────────────────────────────────────────── */
+.ap-textarea {
+    width: 100%;
+    min-height: 72px;
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #0f172a;
+    resize: vertical;
+    box-sizing: border-box;
+    outline: none;
+    font-family: inherit;
+}
+
+.ap-textarea:focus { border-color: #3b82f6; }
+
+/* ── Buttons ───────────────────────────────────────────────────────────── */
+.ap-save-btn {
+    padding: 9px 18px;
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.ap-save-btn:hover   { background: #1d4ed8; }
+.ap-save-btn:active  { transform: scale(0.97); }
+
+.ap-save-btn-inline { align-self: center; white-space: nowrap; }
+
+.ap-reset-btn {
+    padding: 9px 18px;
+    background: #f1f5f9;
+    color: #374151;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.ap-reset-btn:hover { background: #e2e8f0; }
+
+/* ── Animal metrics grid ───────────────────────────────────────────────── */
+.ap-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.ap-metric-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-align: center;
+}
+
+.ap-metric-label {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 500;
+    text-transform: capitalize;
+    margin-bottom: 4px;
+}
+
+.ap-metric-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+/* ── Update row ────────────────────────────────────────────────────────── */
+.ap-update-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.ap-update-row .ap-dropdown     { flex: 1.2; }
+.ap-update-row .ap-number-input { flex: 1; }
+
+/* ── Case form rows ────────────────────────────────────────────────────── */
+.ap-form-row { display: flex; gap: 12px; margin-bottom: 2px; }
+.ap-form-col { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+
+/* ── Case badge ────────────────────────────────────────────────────────── */
+.ap-case-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 20px;
+    padding: 4px 14px;
+    margin-bottom: 4px;
+    align-self: flex-start;
+}
+
+.ap-badge-label  { font-size: 12px; color: #3b82f6; }
+.ap-badge-number { font-size: 14px; font-weight: 600; color: #1d4ed8; }
+
+/* ── Actions row ───────────────────────────────────────────────────────── */
+.ap-actions-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+/* ── Date picker (override DayPickerInput defaults) ────────────────────── */
+.ap-date-picker .DateInput_input {
+    font-size: 13px;
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+}
+
+/* ── Row helper ────────────────────────────────────────────────────────── */
+.ap-row { display: flex; gap: 10px; align-items: flex-end; }
