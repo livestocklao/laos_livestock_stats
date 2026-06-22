@@ -264,8 +264,11 @@ class GoogleSheetsDataLoader:
         if self._connection is None:
             try:
                 creds_json = os.environ["GOOGLE_CREDENTIALS_JSON"]
-                
+                print("exists:", creds_json is not None)
+
                 creds_dict = json.loads(creds_json)
+                if creds_json:
+                    print("type after first loads:", type(json.loads(creds_json)))
                 
                 with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json") as f:
                     json.dump(creds_dict, f)
