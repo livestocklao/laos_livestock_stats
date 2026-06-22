@@ -123,6 +123,13 @@ def _build_header():
                             )
                         ]
                     ),
+                    html.Button(
+                        '🔄',
+                        id='refresh-data-btn',
+                        className='refresh-btn',
+                        n_clicks=0,
+                        style={'marginLeft': '5px', "border": "None", "background": "None", "fontSize":"20px"}
+                    ),
                 ], className='parallel-row'),
 
                 # Footer logos row
@@ -437,7 +444,7 @@ def handle_admin_modal(
 def update_admin_label(auth_data):
     if auth_data and auth_data.get('is_authenticated'):
         return f"Logout ({auth_data.get('username', 'Admin')})"
-    return 'Admin'
+    return '👤 Admin'
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -479,7 +486,23 @@ def auto_refresh_data(n, settings):
     except Exception as e:
         logger.error(f"Auto-refresh failed: {e}")
         return {'is_loading': False, 'error': str(e)}
-    
+ 
+# Add this callback
+@app.callback(
+    Output('data-loading-store', 'data', allow_duplicate=True),
+    Input('refresh-data-btn', 'n_clicks'),
+    prevent_initial_call=True
+)
+def manual_refresh(n):
+    """Manual data refresh from button."""
+    if n:
+        try:
+            refresh_all_data()
+            return {'is_loading': False, 'error': None, 'last_refresh': datetime.now().isoformat()}
+        except Exception as e:
+            return {'is_loading': False, 'error': str(e)}
+    raise PreventUpdate
+   
 @app.callback(
     Output('global-error-display', 'children'),
     Output('global-error-display', 'style'),
