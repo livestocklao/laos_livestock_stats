@@ -21,6 +21,8 @@ REFRESH_INTERVAL_SECONDS has elapsed since the last load.
 """
 
 import os
+import json
+import tempfile
 import gspread
 import pandas as pd
 from typing import Tuple, Optional, Dict, Any, Callable
@@ -261,7 +263,15 @@ class GoogleSheetsDataLoader:
     def _get_connection(self) -> gspread.Spreadsheet:
         if self._connection is None:
             try:
-                gc = gspread.service_account(filename=self.config.CREDENTIALS_FILE)
+                creds_json = os.environ["GOOGLE_CREDENTIALS_JSON"]
+                
+                creds_dict = json.loads(creds_json)
+                
+                with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json") as f:
+                    json.dump(creds_dict, f)
+                    temp_creds_path = f.name
+                
+                gc = gspread.service_account(filename=temp_creds_path)
                 self._connection = gc.open(self.config.SPREADSHEET_NAME)
                 logger.info(f"Google Sheets connection established for '{self.config.SPREADSHEET_NAME}'")
             except FileNotFoundError as e:
