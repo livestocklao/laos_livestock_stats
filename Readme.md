@@ -39,8 +39,8 @@ A comprehensive dashboard for monitoring livestock diseases, statistics, and hea
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repository-url>
-cd livestock-disease-monitoring
+git clone https://github.com/livestocklao/laos_livestock_stats
+cd laos_livestock_dashboard
 ```
 
 ### 2. Set Up Python Virtual Environment
