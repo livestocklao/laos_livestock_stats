@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  dash-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: livestock-disease-monitoring
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8050}:${PORT:-8050}"
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - PORT=${PORT:-8050}
+      - GOOGLE_CREDENTIALS_JSON=${GOOGLE_CREDENTIALS_JSON}
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-changeme}
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount data directory for persistence
+      - ./data:/app/data
+      # Mount logs directory
+      - ./logs:/app/logs
+      # Mount assets (read-only for security)
+      - ./assets:/app/assets:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-8050}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - dash-network
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: '512M'
+        reservations:
+          cpus: '0.5'
+          memory: '256M'
+
+networks:
+  dash-network:
+    driver: bridge
