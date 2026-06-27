@@ -11,6 +11,7 @@ from utils.data_loader import (
     update_disease_stats_worksheet,
     add_new_case_to_database,
 )
+
 import logging
 
 logger = logging.getLogger(__name__)
